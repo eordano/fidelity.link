@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>fidelity.link</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Merriweather">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+      h1, h2, h3, h4 {
+        font-family: 'Merriweather', Arial;
+      }
+      body, div, p {
+        font-family: 'Open Sans', Sans;
+      }
+      p, label, button {
+        font-size: 1.3em;
+      }
+      li {
+        font-size: 1.15em;
+        padding-bottom: 10px;
+      }
+      #transaction {
+        max-width: 550px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <div class='row'>
+        <div class='col-md-12'>
+          <h1> <i class="fa fa-key"></i> fidelity.link</h1>
+          <h2> <i class="fa fa-book"></i> Spec <small><span class='label label-info'>draft</span></small></h2>
+          <h3>Overview</h3>
+
+          <p>
+            A fidelity.link bond is a transaction that sacrifices bitcoins by
+            paying to a P2SH address that can be redeemed by anybody after some
+            time. This is achieved by reveling the redeem script in a
+            standaard OP_RETURN output in the same transaction.
+          </p>
+          <p>
+            See an <a href="https://live.blockcypher.com/btc/tx/e60a8e6e4498468bf71ebdc257500b80a24fb034974b13eb0cdc60a8a4960e24/" target="_blank">example transaction</a> in BlockCypher's block explorer or <a href="https://medium.com/p/e548f46311ff/" target="_blank">read more in this blogpost</a>.
+          </p>
+
+          <h3>Definitions</h3>
+          <ul>
+            <li>A transaction is said to create a fidelity.link bond when it sacrifices to miners coins that can be redeemed in the future following this specification.</li>
+            <li>This is done by paying to the script: <br>
+              <strong>&lt;magic string&gt; &lt;target block height&gt; OP_CHECKLOCKTIMEVERIFY OP_DROP</strong></li>
+            <li>Since this is not a standard script, the payment is made using a P2SH output. To ensure that anybody can still spend it, the script (preimage of the P2SH output) is revealed in an <strong>OP_RETURN</strong> output present in the same transaction. Target block height must be 2015 blocks from the current tip (or more, until <strong>OP_CSV</strong> is deployed).</li>
+            <li>The magic string is 'https://fidelity.link/', ascii encoded, which helps programs to pattern match fidelity link transactions, and advertises the protocol.</li>
+          </ul>
+          <h2><i class="fa fa-wrench"></i> Tools</h2>
+            <div id='tools'>
+            </div>
+          <h2><i class="fa fa-code"></i> Sample code</h2>
+<pre>var bitcore = require('bitcore-lib')
+var utxo = { /* json result from https://insight.bitpay.com/addr/******/utxo */ }
+var tx = new bitcore.Transaction()
+tx.from(utxo)
+var redeemScript = new bitcore.Script()
+  .add(new Buffer('f1b0', 'hex'))
+  .add(bitcore.crypto.BN.fromNumber(400000 /* target block height, at least 2015 blocks in the future */).toScriptNumBuffer())
+  .add(bitcore.Opcode.OP_CHECKLOCKTIMEVERIFY)
+  .add(bitcore.Opcode.OP_DROP)
+tx.to(new bitcore.Address(redeemScript), 100 /* amount to pay to bond */)
+tx.addData(redeemScript.toBuffer())
+tx.sign(/* private key */)
+console.log(tx.toString())</pre>
+          <h2><i class="fa fa-hashtag"></i> About</h2>
+          <p><a href="https://fidelity.link">fidelity.link</a> is an <a href="https://github.com/eordano/fidelity.link">open source experiment</a> by <a href="https://twitter.com/eordano">Esteban Ordano</a>.</p>
+          <p>Based on Peter Todd's <a href="https://github.com/petertodd/trustbits/blob/master/fidelitybond.md">Fidelity Bonds</a> writeout.
+        </div>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  </body>
+</html>

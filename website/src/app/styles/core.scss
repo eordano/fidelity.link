@@ -1,0 +1,68 @@
+:global {
+  @import "base";
+  @import "vendor/normalize";
+
+  // Some best-practice CSS that's useful for most apps
+  // Just remove them if they're not what you want
+  html {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }
+
+  #page-wrapper {
+    padding-top: 50px;
+  }
+
+  #measure label {
+    font-size: 18px;
+    padding-top: 15px;
+    padding-bottom: 10px;
+  }
+
+  .target-height {
+    display: inline-block;
+    width: 100px;
+    margin-left: 15px;
+  }
+
+  .create-partial, .inspect-results {
+    display: block;
+    vertical-align: center;
+    padding-top: 15px;
+    div.row {
+      height: 48px;
+      display: block;
+    }
+    .title {
+      font-size: 16px;
+    }
+    .value {
+      font-size: 17px;
+      font-weight: 300;
+    }
+    .value input {
+      position: relative;
+      top: -10px;
+      left: -27px;
+      font-size: 17px;
+      height: 40px;
+    }
+    .value .text-area {
+      height: 40px;
+      position: relative;
+      top: -10px;
+      left: -11px;
+      font-size: 17px;
+    }
+  }
+}

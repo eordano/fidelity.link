@@ -2,44 +2,23 @@
 
 A pseudonymous anti-spam identity system based on the blockchain.
 
-Based on previous work by Peter Todd, Jeff Garzik and others.
+Concept and idea based previous work by Peter Todd, Jeff Garzik and others.
 
 ## Overview
 
-### Glossary
+A fidelity bond for the purposes of this app is a certain amount of bitcoin
+days that are sacrificed to the miners or whoever gets to redeem a transaction.
 
-* Identity: An entity that has an unique uuid.
-* Fidelity Bond: A set of two transactions, called the commitment transaction
-  and the sacrifice transaction.
-* Active public key: The public key known to be associated with the identity.
-* Commitment transaction: A transaction containing three outputs:
-  - A single P2PKH output funding the sacrifice transaction's only input
-    address
-  - An OP_RETURN output with the serialized sacrifice transaction
-  - An OP_RETURN output with the public key that can revokate the fidelity bond
-* Sacrifice transaction: A transaction spending the first output of the
-  commitment transaction to no outputs (the miner that mines this transaction
-  will get all the inputs as fee). This transaction must be time-locked at least
-  144 blocks (about 48 hours) into the future since the commitment transaction
-  got into a block.
-* Revokation transaction: A transaction that changes the active public key
-  associated with an identity.
+The value of the fidelity bond is the amount of satoshis being sacrificed.
 
-## API
+In order to certify that the bitcoins can be redeemed by anyone, an output of
+a transaction is locked with OP\_CHECKLOCKTIMEVERIFY, and the redeem script
+is revealed in the same transaction with an OP\_RETURN. P2SH is needed due to
+the use of a non-standard script.
 
-* GET /:uuid
-  - Returns whether a given id has recorded a fidelity bond on the blockchain,
-    whether its corresponding private key has been compromised, and a summary of
-    associated information to this identity (including revokations)
-* POST /:uuid
-  - Report two transactions on the blockchain to be checked if they have a
-    valid commitment sacrifice on the blockchain.
-* POST /:uuid/revokation
-  - Report that a revokation certificate has been published on the blockchain.
-* POST /craft
-  - Create but do not sign two transactions composing the fidelity bond.
-* POST /craft/revokation
-  - Create a revokation transaction for a fidelity bond.
+At least 2015 blocks must be mined between the block that includes the fidelity
+bond transaction and the block redeeming it. OP\_CHECKSEQUENCEVERIFY is more
+suited than OP_CLTV for this, but hasn't been deployed yet.
 
-## Bibliography
-
+The redeem script structure is:
+  <magic string> <block height> OP\_CHECKLOCKTIMEVERIFY OP\_DROP
