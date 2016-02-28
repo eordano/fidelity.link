@@ -70,7 +70,7 @@ var utxo = { /* json result from https://insight.bitpay.com/addr/******/utxo */ 
 var tx = new bitcore.Transaction()
 tx.from(utxo)
 var redeemScript = new bitcore.Script()
-  .add(new Buffer('f1b0', 'hex'))
+  .add(new Buffer('https://fidelity.link/'))
   .add(bitcore.crypto.BN.fromNumber(400000 /* target block height, at least 2015 blocks in the future */).toScriptNumBuffer())
   .add(bitcore.Opcode.OP_CHECKLOCKTIMEVERIFY)
   .add(bitcore.Opcode.OP_DROP)
@@ -79,7 +79,7 @@ tx.addData(redeemScript.toBuffer())
 tx.sign(/* private key */)
 console.log(tx.toString())</pre>
           <h2><i class="fa fa-hashtag"></i> About</h2>
-          <p><a href="https://fidelity.link">fidelity.link</a> is an <a href="https://github.com/eordano/fidelity.link">open source experiment</a> by <a href="https://twitter.com/eordano">Esteban Ordano</a>.</p>
+          <p><a href="https://fidelity.link">fidelity.link</a> is <a href="https://github.com/eordano/fidelity.link">open source</a>. Made by <a href="https://twitter.com/eordano">Esteban Ordano</a>.</p>
           <p>Based on Peter Todd's <a href="https://github.com/petertodd/trustbits/blob/master/fidelitybond.md">Fidelity Bonds</a> writeout.
         </div>
       </div>
