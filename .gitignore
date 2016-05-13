@@ -1,3 +1,10 @@
 node_modules
 www
 *.sw[a-z]
+
+.DS_STORE
+*.log
+*.sw[a-z]
+
+dist
+coverage
