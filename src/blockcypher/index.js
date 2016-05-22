@@ -6,41 +6,41 @@ const BLOCKCHAIN_URL_MAIN = 'https://api.blockcypher.com/v1/btc/main'
 const UNSPENT_ONLY = 'unspentOnly'
 const INCLUDE_SCRIPT = 'includeScript'
 
-function returnJsonBody(res) {
+function returnJsonBody (res) {
   return res.json()
 }
 
-function fetchJson() {
+function fetchJson () {
   return fetch.apply(this, arguments).then(returnJsonBody)
 }
 
-function makeTxUrl(txId) {
+function makeTxUrl (txId) {
   return BLOCKCHAIN_URL_MAIN + '/txs/' + txId
 }
 
-function fetchTx(txId) {
+function fetchTx (txId) {
   return fetchJson(makeTxUrl(txId))
 }
 
-function makeAddressUrl(address) {
+function makeAddressUrl (address) {
   const opts = [UNSPENT_ONLY, INCLUDE_SCRIPT]
   const urlEncodedOpts = '&'.join(opts.map(opt => opt + '=true'))
   return `${BLOCKCHAIN_URL_MAIN}/addrs/${address}?${urlEncodedOpts}`
 }
 
-function fetchAddressInfo(address) {
+function fetchAddressInfo (address) {
   return fetchJson(makeAddressUrl(address))
 }
 
-function getBlockchainState() {
+function getBlockchainState () {
   return fetchJson(BLOCKCHAIN_URL_MAIN)
 }
 
-function getMaybeArray(array) {
+function getMaybeArray (array) {
   return _.isArray(array) ? array : []
 }
 
-function broadcastTx(tx) => {
+function broadcastTx (tx) {
   return fetchJson(BLOCKCHAIN_URL_MAIN + '/txs/push', {
     method: 'post',
     headers: { 'Content-Type': 'application/json' },
@@ -48,7 +48,7 @@ function broadcastTx(tx) => {
   })
 }
 
-function blockcypherToBitcoreOutputFormat(output) {
+function blockcypherToBitcoreOutputFormat (output) {
   return {
     txId: output.tx_hash,
     outputIndex: output.tx_output_n,
@@ -57,7 +57,7 @@ function blockcypherToBitcoreOutputFormat(output) {
   }
 }
 
-function processAddressInfoIntoOutputs(rawInfo) {
+function processAddressInfoIntoOutputs (rawInfo) {
   const txs = getMaybeArray(rawInfo.txrefs)
   const unconfirmed = getMaybeArray(rawInfo.unconfirmed_txrefs)
 
@@ -66,8 +66,8 @@ function processAddressInfoIntoOutputs(rawInfo) {
     .map(bitcore.Transaction.UnspentOutput)
 }
 
-function fetchOutputs(address) {
-  return fetchAddressInfo(addressStr).then(processAddressInfoIntoOutputs)
+function fetchOutputs (address) {
+  return fetchAddressInfo(address).then(processAddressInfoIntoOutputs)
 }
 
 export default {
